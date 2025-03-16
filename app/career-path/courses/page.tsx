@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Navbar } from "@/components/Navbar"
+import { Footer } from "@/components/Footer"
 
 export default function CoursesQuestionsPage() {
   const router = useRouter()
@@ -42,14 +44,7 @@ export default function CoursesQuestionsPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b">
-        <div className="container mx-auto py-4 px-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold">
-            Career Guidance
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <Navbar />
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-md w-full mx-auto">
@@ -198,11 +193,7 @@ export default function CoursesQuestionsPage() {
         </div>
       </main>
 
-      <footer className="border-t py-4">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Career Guidance Platform. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Navbar } from "@/components/Navbar"
+import { Footer } from "@/components/Footer"
 
 export default function WorkRecommendationsPage() {
   const searchParams = useSearchParams()
@@ -74,14 +76,7 @@ export default function WorkRecommendationsPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b">
-        <div className="container mx-auto py-4 px-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold">
-            Career Guidance
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <Navbar/>
 
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
@@ -204,11 +199,7 @@ export default function WorkRecommendationsPage() {
         </div>
       </main>
 
-      <footer className="border-t py-4">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Career Guidance Platform. All rights reserved.
-        </div>
-      </footer>
+      <Footer/>
     </div>
   )
 }

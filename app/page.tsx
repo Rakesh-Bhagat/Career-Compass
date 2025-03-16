@@ -20,7 +20,7 @@ export default function Home() {
 
           <div className="space-y-4">
             <Button asChild className="w-full">
-              <Link href="/auth">Get Started</Link>
+              <Link href="/login">Get Started</Link>
             </Button>
             <Button variant="outline" asChild className="w-full">
               <Link href="/about">Learn More</Link>

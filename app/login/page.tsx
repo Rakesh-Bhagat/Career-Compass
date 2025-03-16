@@ -2,8 +2,9 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation"
 import { Mail, Lock, User, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -11,26 +12,91 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { sign } from "crypto";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 export default function AuthPage() {
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState("login")
+  const { data: session} = useSession();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("login");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (session) {
+      router.push("/career-path");
+    }
+  }, [session, router]);
+
+  const handleLogin = async(e: React.FormEvent) => {
     e.preventDefault()
-    router.push("/career-path")
-  }
+    setLoading(true);
+    setError("");
+
+    const formData = new FormData(e.target as HTMLFormElement);
+    const res = await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirect: false,
+    });
+
+    if(res?.error){
+      setError("invalid email or password");
+      setLoading(false);
+    }else{
+      router.push("/career-path");
+    }
+  };
+
+
+  const handleRegister = async(e: React.FormEvent) =>{
+    e.preventDefault();
+    // console.log("handleRegister function called");
+    setLoading(true);
+    setError("");
+
+    // const formData = new FormData(e.target as HTMLFormElement);
+
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    const userData = {
+        name: formData.get("name") as string,
+        email: formData.get("register-email") as string,
+        password: formData.get("register-password") as string,
+        confirmPassword: formData.get("confirm-password") as string,
+    };
+
+    // console.log("Sending Data:", userData);
+
+    const res = await fetch("/signup", {
+      method: "POST",
+      body: JSON.stringify(userData),
+      headers: {"Content-Type" : "application/json"},
+    });
+
+
+    const data = await res.json();
+    if(!res.ok){
+      setError(data.message || "Failed to Signed up");
+      setLoading(false);
+      return;
+    }
+
+    await signIn("credentials", {
+      email: formData.get("register-email"),
+      password: formData.get("register-password"),
+      redirect: false,
+    });
+
+    router.push("/career-path");
+
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b">
-        <div className="container mx-auto py-4 px-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold">
-            Career Guidance
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <Navbar/>
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-md w-full mx-auto">
@@ -46,13 +112,14 @@ export default function AuthPage() {
                 <TabsTrigger value="register">Sign Up</TabsTrigger>
               </TabsList>
 
+              {/* Login Form */}
               <TabsContent value="login" className="space-y-4 mt-6">
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="email" type="email" placeholder="name@example.com" className="pl-10" required />
+                      <Input id="email" name="email" type="email" placeholder="name@example.com" className="pl-10" required />
                     </div>
                   </div>
 
@@ -65,12 +132,12 @@ export default function AuthPage() {
                     </div>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="password" type="password" className="pl-10" required />
+                      <Input id="password" name="password" type="password" className="pl-10" required />
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full">
-                    Login
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Logging in.." : "Login"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </form>
@@ -84,7 +151,7 @@ export default function AuthPage() {
                   </div>
                 </div>
 
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => signIn("google")}>
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -107,13 +174,15 @@ export default function AuthPage() {
                 </Button>
               </TabsContent>
 
+
+              {/* SignUp form  */}
               <TabsContent value="register" className="space-y-4 mt-6">
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleRegister} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="name" type="text" placeholder="John Doe" className="pl-10" required />
+                      <Input id="name" name= "name" type="text" placeholder="Enter your name" className="pl-10" required />
                     </div>
                   </div>
 
@@ -124,6 +193,7 @@ export default function AuthPage() {
                       <Input
                         id="register-email"
                         type="email"
+                        name="register-email"
                         placeholder="name@example.com"
                         className="pl-10"
                         required
@@ -135,7 +205,7 @@ export default function AuthPage() {
                     <Label htmlFor="register-password">Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="register-password" type="password" className="pl-10" required />
+                      <Input id="register-password" name="register-password"type="password" className="pl-10" required />
                     </div>
                   </div>
 
@@ -143,12 +213,12 @@ export default function AuthPage() {
                     <Label htmlFor="confirm-password">Confirm Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="confirm-password" type="password" className="pl-10" required />
+                      <Input id="confirm-password" name="confirm-password" type="password" className="pl-10" required />
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full">
-                    Create Account
+                  <Button type="submit" className="w-full" disabled={loading} >
+                    {loading ? "Creating account...": "Create Account"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </form>
@@ -162,7 +232,7 @@ export default function AuthPage() {
                   </div>
                 </div>
 
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => signIn("google")}>
                   <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                     <path
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -189,11 +259,7 @@ export default function AuthPage() {
         </div>
       </main>
 
-      <footer className="border-t py-4">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Career Guidance Platform. All rights reserved.
-        </div>
-      </footer>
+      <Footer/>
     </div>
   )
 }
