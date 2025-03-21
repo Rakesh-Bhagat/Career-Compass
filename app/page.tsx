@@ -1,4 +1,5 @@
 import { Footer } from "@/components/Footer";
+import { Landing } from "@/components/Landing";
 import { Navbar } from "@/components/Navbar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      <main className="flex-1 flex items-center justify-center p-4">
+      {/* <main className="flex-1 flex items-center justify-center p-4">
         <div className="max-w-md w-full mx-auto text-center space-y-6">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold">Welcome to Career Guidance</h2>
@@ -27,7 +28,9 @@ export default function Home() {
             </Button>
           </div>
         </div>
-      </main>
+      </main> */}
+
+      <Landing />
 
       <Footer />
     </div>
