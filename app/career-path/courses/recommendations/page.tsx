@@ -1,110 +1,154 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import { BookOpen, Building, Clock, DollarSign, ArrowUpRight, ChevronRight, Filter } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Navbar } from "@/components/Navbar"
-import { Footer } from "@/components/Footer"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import {
+  BookOpen,
+  Building,
+  Clock,
+  DollarSign,
+  ArrowUpRight,
+  ChevronRight,
+  Filter,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+
+interface Course {
+  _id: string;
+  title: string;
+  institution: string;
+  location: string;
+  duration: string;
+  price: number;
+  type: string;
+  timeline: string;
+  link: string;
+}
 
 export default function CoursesRecommendationsPage() {
-  const searchParams = useSearchParams()
-  const city = searchParams.get("city") || "mumbai"
-  const budget = Number.parseInt(searchParams.get("budget") || "250000")
-  const timeline = searchParams.get("timeline") || "short"
+  const searchParams = useSearchParams();
+  const city = searchParams.get("city") || "mumbai";
+  const budget = Number.parseInt(searchParams.get("budget") || "250000");
+  const timeline = searchParams.get("timeline") || "short";
 
-  const [filter, setFilter] = useState("all")
+  const [filter, setFilter] = useState("all");
+  const [courses, setcourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch("/api/courses");
+        const data = await res.json();
+        if (data.success) {
+          setcourses(data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch courses", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   // Course recommendations based on parameters
-  const courseRecommendations = [
-    {
-      title: "Diploma in Digital Marketing",
-      institution: "Digital Academy India",
-      location: "Mumbai, Online",
-      duration: "6 months",
-      price: 45000,
-      type: "diploma",
-      timeline: "short",
-    },
-    {
-      title: "Full Stack Web Development",
-      institution: "Coding Ninjas",
-      location: "Delhi, Online",
-      duration: "8 months",
-      price: 85000,
-      type: "certification",
-      timeline: "short",
-    },
-    {
-      title: "Bachelor of Computer Applications (BCA)",
-      institution: "IGNOU",
-      location: "Pan India",
-      duration: "3 years",
-      price: 120000,
-      type: "degree",
-      timeline: "long",
-    },
-    {
-      title: "Diploma in Hotel Management",
-      institution: "IHM",
-      location: "Mumbai, Delhi, Bangalore",
-      duration: "1 year",
-      price: 75000,
-      type: "diploma",
-      timeline: "short",
-    },
-    {
-      title: "Bachelor of Business Administration",
-      institution: "Symbiosis University",
-      location: "Pune, Online",
-      duration: "3 years",
-      price: 350000,
-      type: "degree",
-      timeline: "long",
-    },
-    {
-      title: "Data Science Certification",
-      institution: "Udemy",
-      location: "Online",
-      duration: "4 months",
-      price: 25000,
-      type: "certification",
-      timeline: "short",
-    },
-    {
-      title: "Graphic Design Course",
-      institution: "Arena Animation",
-      location: "Pan India",
-      duration: "6 months",
-      price: 60000,
-      type: "certification",
-      timeline: "short",
-    },
-    {
-      title: "Bachelor of Science in IT",
-      institution: "Mumbai University",
-      location: "Mumbai",
-      duration: "3 years",
-      price: 180000,
-      type: "degree",
-      timeline: "long",
-    },
-  ]
+  // const courseRecommendations = [
+  //   {
+  //     title: "Diploma in Digital Marketing",
+  //     institution: "Digital Academy India",
+  //     location: "Mumbai, Online",
+  //     duration: "6 months",
+  //     price: 45000,
+  //     type: "diploma",
+  //     timeline: "short",
+  //   },
+  //   {
+  //     title: "Full Stack Web Development",
+  //     institution: "Coding Ninjas",
+  //     location: "Delhi, Online",
+  //     duration: "8 months",
+  //     price: 85000,
+  //     type: "certification",
+  //     timeline: "short",
+  //   },
+  //   {
+  //     title: "Bachelor of Computer Applications (BCA)",
+  //     institution: "IGNOU",
+  //     location: "Pan India",
+  //     duration: "3 years",
+  //     price: 120000,
+  //     type: "degree",
+  //     timeline: "long",
+  //   },
+  //   {
+  //     title: "Diploma in Hotel Management",
+  //     institution: "IHM",
+  //     location: "Mumbai, Delhi, Bangalore",
+  //     duration: "1 year",
+  //     price: 75000,
+  //     type: "diploma",
+  //     timeline: "short",
+  //   },
+  //   {
+  //     title: "Bachelor of Business Administration",
+  //     institution: "Symbiosis University",
+  //     location: "Pune, Online",
+  //     duration: "3 years",
+  //     price: 350000,
+  //     type: "degree",
+  //     timeline: "long",
+  //   },
+  //   {
+  //     title: "Data Science Certification",
+  //     institution: "Udemy",
+  //     location: "Online",
+  //     duration: "4 months",
+  //     price: 25000,
+  //     type: "certification",
+  //     timeline: "short",
+  //   },
+  //   {
+  //     title: "Graphic Design Course",
+  //     institution: "Arena Animation",
+  //     location: "Pan India",
+  //     duration: "6 months",
+  //     price: 60000,
+  //     type: "certification",
+  //     timeline: "short",
+  //   },
+  //   {
+  //     title: "Bachelor of Science in IT",
+  //     institution: "Mumbai University",
+  //     location: "Mumbai",
+  //     duration: "3 years",
+  //     price: 180000,
+  //     type: "degree",
+  //     timeline: "long",
+  //   },
+  // ]
 
   // Filter courses based on parameters
-  const filteredCourses = courseRecommendations.filter((course) => {
+  const filteredCourses = courses.filter((course) => {
     // Filter by budget
-    if (course.price > budget) return false
+    if (course.price > budget) return false;
 
     // Filter by timeline
-    if (timeline === "short" && course.timeline !== "short") return false
-    if (timeline === "long" && course.timeline !== "long") return false
+    if (timeline === "short" && course.timeline !== "short") return false;
+    if (timeline === "long" && course.timeline !== "long") return false;
 
     // Filter by type if selected
-    if (filter !== "all" && course.type !== filter) return false
+    if (filter !== "all" && course.type !== filter) return false;
 
     // Filter by city (simplified)
     if (
@@ -113,20 +157,23 @@ export default function CoursesRecommendationsPage() {
       !course.location.includes("Online") &&
       !course.location.includes("Pan India")
     )
-      return false
+      return false;
 
-    return true
-  })
+    return true;
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar/>
+      <Navbar />
 
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
           <div className="space-y-8">
             <div>
-              <Link href="/career-path/courses" className="text-primary hover:underline inline-flex items-center">
+              <Link
+                href="/career-path/courses"
+                className="text-primary hover:underline inline-flex items-center"
+              >
                 <ChevronRight className="h-4 w-4 mr-1 rotate-180" />
                 Back to Preferences
               </Link>
@@ -134,9 +181,12 @@ export default function CoursesRecommendationsPage() {
               <div className="space-y-2 mt-4">
                 <h1 className="text-3xl font-bold">Recommended Courses</h1>
                 <p className="text-muted-foreground">
-                  Based on your preferences: {city.charAt(0).toUpperCase() + city.slice(1)}, Budget ₹
+                  Based on your preferences:{" "}
+                  {city.charAt(0).toUpperCase() + city.slice(1)}, Budget ₹
                   {(budget / 100000).toFixed(1)} Lakhs, Timeline:{" "}
-                  {timeline === "short" ? "Within 3 years" : "More than 3 years"}
+                  {timeline === "short"
+                    ? "Within 3 years"
+                    : "More than 3 years"}
                 </p>
               </div>
             </div>
@@ -148,7 +198,11 @@ export default function CoursesRecommendationsPage() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Button variant={filter === "all" ? "default" : "outline"} size="sm" onClick={() => setFilter("all")}>
+                <Button
+                  variant={filter === "all" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilter("all")}
+                >
                   All
                 </Button>
                 <Button
@@ -182,15 +236,19 @@ export default function CoursesRecommendationsPage() {
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
                         <div>
-                          <CardTitle className="text-lg">{course.title}</CardTitle>
-                          <CardDescription className="mt-1">{course.institution}</CardDescription>
+                          <CardTitle className="text-lg">
+                            {course.title}
+                          </CardTitle>
+                          <CardDescription className="mt-1">
+                            {course.institution}
+                          </CardDescription>
                         </div>
                         <div className="px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
                           {course.type === "certification"
                             ? "Certification"
                             : course.type === "diploma"
-                              ? "Diploma"
-                              : "Degree"}
+                            ? "Diploma"
+                            : "Degree"}
                         </div>
                       </div>
                     </CardHeader>
@@ -210,23 +268,38 @@ export default function CoursesRecommendationsPage() {
                         </div>
                         <div className="flex items-center text-sm">
                           <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{course.timeline === "short" ? "Short-term" : "Long-term"}</span>
+                          <span>
+                            {course.timeline === "short"
+                              ? "Short-term"
+                              : "Long-term"}
+                          </span>
                         </div>
                       </div>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full group">
-                        Apply Now
-                        <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                      </Button>
+                      <a
+                        href={course.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full"
+                      >
+                        <Button className="w-full group">
+                          Apply Now
+                          <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                        </Button>
+                      </a>
                     </CardFooter>
                   </Card>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12 space-y-4">
-                <h3 className="text-xl font-medium">No courses match your criteria</h3>
-                <p className="text-muted-foreground">Try adjusting your filters or preferences</p>
+                <h3 className="text-xl font-medium">
+                  No courses match your criteria
+                </h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your filters or preferences
+                </p>
                 <Button asChild>
                   <Link href="/career-path/courses">Update Preferences</Link>
                 </Button>
@@ -236,8 +309,7 @@ export default function CoursesRecommendationsPage() {
         </div>
       </main>
 
-      <Footer/>
+      <Footer />
     </div>
-  )
+  );
 }
-
