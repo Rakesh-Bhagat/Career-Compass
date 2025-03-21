@@ -6,55 +6,82 @@ import { connectToDatabase } from "./mongodb";
 import { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
-    session: { strategy: "jwt" },
-    providers: [
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        }),
-        CredentialsProvider({
-            name: "Credentials",
-            credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials) {
-                console.log("🔍 Checking credentials:", credentials);
-                await connectToDatabase();
+  session: { strategy: "jwt" },
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
 
-                const user = await User.findOne({ email: credentials?.email });
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        await connectToDatabase();
 
-                if (!user) {
-                    console.log("❌ User not found");
-                    throw new Error("No user found!!");
-                }
+        if (credentials?.email) {
+          const user = await User.findOne({ email: credentials.email });
 
-                const isPasswordValid = await bcrypt.compare(credentials!.password, user.password);
-                console.log("Password Match:", isPasswordValid);
-                if (!isPasswordValid) {
-                    console.log("❌ Incorrect password");
-                    throw new Error("Invalid password!!");
-                }
+          if (!user) {
+            // If no user is found, throw an error
+            console.log("❌ No user found with that email.");
+            throw new Error("No user found with that email.");
+          }
 
-                return { id: user._id, name: user.name, email: user.email };
-            },
-        }),
-    ],
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (token) {
-                session.user!.id = token.id as string;
-            }
-            return session;
-        },
+          // Check password if credentials login
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+          if (!isPasswordValid) {
+            console.log("❌ Invalid password");
+            throw new Error("Invalid password!!");
+          }
+
+          // Return user data if everything is valid
+          return { id: user._id, name: user.name, email: user.email };
+        }
+
+        // If no email is provided (should not happen), return null
+        return null;
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
-    pages: {
-        signIn: "/login",
+    async session({ session, token }) {
+      if (token) {
+        session.user!.id = token.id as string;
+      }
+      return session;
     },
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google" && user) {
+        await connectToDatabase();
+        
+        // Check if the user exists in the database
+        const existingUser = await User.findOne({ email: user.email });
+
+        // If the user doesn't exist, create a new one using Google data
+        if (!existingUser) {
+          const newUser = new User({
+            name: profile?.name, // Google provides name
+            email: user.email,   // Google provides email
+            password: "",        // Google login doesn't require password
+          });
+          await newUser.save();
+        }
+      }
+
+      return true;
+    },
+  },
+  pages: {
+    signIn: "/login", // Specify custom login page
+  },
 };
