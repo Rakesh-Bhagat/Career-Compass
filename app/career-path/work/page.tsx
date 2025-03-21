@@ -37,7 +37,7 @@ export default function WorkEducationLevelPage() {
 
             <div className="grid md:grid-cols-3 gap-6">
               <Card
-                className={`cursor-pointer transition-all hover:shadow-lg ${selectedLevel === "10th" ? "ring-2 ring-primary" : ""}`}
+                className={`cursor-pointer transition-all bg-background hover:shadow-lg ${selectedLevel === "10th" ? "ring-2 ring-primary" : ""}`}
                 onClick={() => handleLevelSelect("10th")}
               >
                 <CardHeader className="text-center">
@@ -61,7 +61,7 @@ export default function WorkEducationLevelPage() {
               </Card>
 
               <Card
-                className={`cursor-pointer transition-all hover:shadow-lg ${selectedLevel === "12th" ? "ring-2 ring-primary" : ""}`}
+                className={`cursor-pointer transition-all bg-background hover:shadow-lg ${selectedLevel === "12th" ? "ring-2 ring-primary" : ""}`}
                 onClick={() => handleLevelSelect("12th")}
               >
                 <CardHeader className="text-center">
@@ -85,7 +85,7 @@ export default function WorkEducationLevelPage() {
               </Card>
 
               <Card
-                className={`cursor-pointer transition-all hover:shadow-lg ${selectedLevel === "unskilled" ? "ring-2 ring-primary" : ""}`}
+                className={`cursor-pointer transition-all bg-background hover:shadow-lg ${selectedLevel === "unskilled" ? "ring-2 ring-primary" : ""}`}
                 onClick={() => handleLevelSelect("unskilled")}
               >
                 <CardHeader className="text-center">

@@ -40,7 +40,7 @@ export default function CareerPathPage() {
 
             <div className="grid md:grid-cols-2 gap-6">
               <Card
-                className={`cursor-pointer transition-all hover:shadow-lg ${selectedPath === "work" ? "ring-2 ring-primary" : ""}`}
+                className={`cursor-pointer transition-all bg-background  hover:shadow-lg ${selectedPath === "work" ? "ring-4 ring-primary" : ""}`}
                 onClick={() => handlePathSelect("work")}
               >
                 <CardHeader className="text-center">
@@ -62,7 +62,7 @@ export default function CareerPathPage() {
               </Card>
 
               <Card
-                className={`cursor-pointer transition-all hover:shadow-lg ${selectedPath === "courses" ? "ring-2 ring-primary" : ""}`}
+                className={`cursor-pointer transition-all bg-background hover:shadow-lg ${selectedPath === "courses" ? "ring-2 ring-primary" : ""}`}
                 onClick={() => handlePathSelect("courses")}
               >
                 <CardHeader className="text-center">

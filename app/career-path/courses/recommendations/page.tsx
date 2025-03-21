@@ -232,7 +232,7 @@ export default function CoursesRecommendationsPage() {
             {filteredCourses.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredCourses.map((course, index) => (
-                  <Card key={index}>
+                  <Card key={index} className="bg-background">
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
                         <div>

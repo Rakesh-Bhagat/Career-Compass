@@ -189,7 +189,7 @@ export default function WorkRecommendationsPage() {
                 ) : (
                   <div className="grid md:grid-cols-2 gap-6">
                     {jobs.map((job) => (
-                      <Card key={job._id}>
+                      <Card key={job._id} className="bg-background">
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between">
                             <div>
@@ -247,7 +247,7 @@ export default function WorkRecommendationsPage() {
                   </div>
                 )}
 
-                <div className="bg-muted p-4 rounded-lg">
+                <div className=" p-4 rounded-lg bg-muted">
                   <div className="flex items-start space-x-4">
                     <div className="p-2 rounded-full bg-primary/10 mt-1">
                       <Lightbulb className="h-5 w-5 text-primary" />

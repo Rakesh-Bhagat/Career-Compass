@@ -74,7 +74,7 @@ export default function CoursesQuestionsPage() {
               </div>
             </div>
 
-            <Card>
+            <Card className="bg-background">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   {step === 1 && (
@@ -106,7 +106,7 @@ export default function CoursesQuestionsPage() {
                         <SelectTrigger id="city">
                           <SelectValue placeholder="Select a city" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-background">
                           <SelectItem value="mumbai">Mumbai</SelectItem>
                           <SelectItem value="delhi">Delhi</SelectItem>
                           <SelectItem value="bangalore">Bangalore</SelectItem>
