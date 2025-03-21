@@ -36,7 +36,7 @@ export function Landing(){
               </div>
               <div className="relative mx-auto aspect-video  rounded-xl lg:order-last">
                 <Image
-                  src="/heroimg.png"
+                  src="/heroimg2.png"
                   width={650}
                   height={650}
                   alt="Career Guidance"
@@ -83,7 +83,7 @@ export function Landing(){
           </div>
         </section>
 
-        <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-background">
+        <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-background border-b">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -154,7 +154,7 @@ export function Landing(){
           </div>
         </section>
 
-        <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32">
+        <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32 border-b">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
