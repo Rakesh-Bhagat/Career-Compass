@@ -8,8 +8,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={() => {
-        signOut()
-        router.push("/login")
+        signOut({callbackUrl: "/"})
     }}
       className="px-4 mr-2 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
     >
