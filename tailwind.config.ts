@@ -27,7 +27,7 @@ const config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(200, 100%, 50%)", // Sky blue
+          DEFAULT: "hsl(198, 94%, 38%)", 
           foreground: "hsl(0, 0%, 100%)",
         },
         secondary: {
