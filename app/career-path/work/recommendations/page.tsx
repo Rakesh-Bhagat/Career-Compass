@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Briefcase, ArrowUpRight, Lightbulb, ChevronRight } from "lucide-react";
+import { Briefcase, ArrowUpRight, Lightbulb, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,6 +26,7 @@ interface Job {
   roadmap: string;
   qualification: string;
 }
+
 interface Skills {
   _id: string;
   title: string;
@@ -41,107 +42,44 @@ export default function WorkRecommendationsPage() {
   const [activeTab, setActiveTab] = useState("jobs");
   const [jobs, setJobs] = useState<Job[]>([]);
   const [skills, setSkills] = useState<Skills[]>([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+  const [loadingSkills, setLoadingSkills] = useState(true);
 
-  // fetching jobs from the database
-
+  // Fetch jobs from the database
   useEffect(() => {
     const fetchJobs = async () => {
+      setLoadingJobs(true);
       try {
         const res = await fetch(`/api/jobs?level=${level}`);
         const data = await res.json();
-
         setJobs(data);
       } catch (error) {
         console.error("Error fetching jobs", error);
+      } finally {
+        setLoadingJobs(false);
       }
     };
 
     fetchJobs();
   }, [level]);
 
-  useEffect(() =>{
+  // Fetch skills from the database
+  useEffect(() => {
     const fetchSkills = async () => {
+      setLoadingSkills(true);
       try {
         const res = await fetch("/api/skills");
         const data = await res.json();
         setSkills(data);
       } catch (error) {
-        console.error("Error fetching skills", error)
+        console.error("Error fetching skills", error);
+      } finally {
+        setLoadingSkills(false);
       }
     };
 
     fetchSkills();
-  }, [])
-
-
-
-  // Job recommendations based on education level
-  // const jobRecommendations = {
-  //   "10th": [
-  //     { title: "Data Entry Operator", salary: "₹12,000 - ₹18,000", location: "Remote/Office" },
-  //     { title: "Retail Sales Associate", salary: "₹15,000 - ₹20,000", location: "In-store" },
-  //     { title: "Customer Service Representative", salary: "₹15,000 - ₹25,000", location: "Call Center" },
-  //     { title: "Office Assistant", salary: "₹12,000 - ₹20,000", location: "Office" },
-  //   ],
-  //   "12th": [
-  //     { title: "Bank Clerk", salary: "₹25,000 - ₹35,000", location: "Bank Branch" },
-  //     { title: "Junior Administrative Assistant", salary: "₹18,000 - ₹28,000", location: "Office" },
-  //     { title: "BPO Executive", salary: "₹20,000 - ₹30,000", location: "Call Center" },
-  //     { title: "Sales Executive", salary: "₹15,000 - ₹35,000 + Incentives", location: "Field/Office" },
-  //   ],
-  //   "unskilled": [
-  //     { title: "Delivery Partner", salary: "₹15,000 - ₹25,000", location: "Field" },
-  //     { title: "Security Guard", salary: "₹12,000 - ₹18,000", location: "Various Locations" },
-  //     { title: "Factory Worker", salary: "₹12,000 - ₹20,000", location: "Factory" },
-  //     { title: "Housekeeping Staff", salary: "₹10,000 - ₹15,000", location: "Hotels/Offices" },
-  //   ],
-  // }
-
-  // Skill upgrade recommendations
-  // const skillRecommendations = [
-  //   {
-  //     title: "Computer Skills",
-  //     duration: "3-6 months",
-  //     description:
-  //       "Learn basic to advanced computer operations, MS Office, and typing skills.",
-  //     levels: [
-  //       "Beginner: Basic Computer Operations",
-  //       "Intermediate: MS Office Suite",
-  //       "Advanced: Data Analysis",
-  //     ],
-  //   },
-  //   {
-  //     title: "Digital Marketing",
-  //     duration: "2-4 months",
-  //     description: "Learn social media marketing, SEO, and content creation.",
-  //     levels: [
-  //       "Beginner: Social Media Basics",
-  //       "Intermediate: SEO & Analytics",
-  //       "Advanced: Campaign Management",
-  //     ],
-  //   },
-  //   {
-  //     title: "Technical Skills",
-  //     duration: "6-12 months",
-  //     description:
-  //       "Learn electrical, plumbing, or carpentry skills for trade jobs.",
-  //     levels: [
-  //       "Beginner: Safety & Basic Tools",
-  //       "Intermediate: Repairs & Maintenance",
-  //       "Advanced: Installation & Troubleshooting",
-  //     ],
-  //   },
-  //   {
-  //     title: "Language Skills",
-  //     duration: "3-6 months",
-  //     description: "Improve English communication for better job prospects.",
-  //     levels: [
-  //       "Beginner: Basic Communication",
-  //       "Intermediate: Fluent Conversation",
-  //       "Advanced: Business Communication",
-  //     ],
-  //   },
-  // ];
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -173,18 +111,19 @@ export default function WorkRecommendationsPage() {
               </div>
             </div>
 
-            <Tabs
-              defaultValue="jobs"
-              className="w-full"
-              onValueChange={setActiveTab}
-            >
+            <Tabs defaultValue="jobs" className="w-full" onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2 mb-8">
                 <TabsTrigger value="jobs">Available Jobs</TabsTrigger>
                 <TabsTrigger value="skills">Upgrade Skills</TabsTrigger>
               </TabsList>
 
+              {/* Jobs Tab */}
               <TabsContent value="jobs" className="space-y-6">
-                {jobs.length === 0 ? (
+                {loadingJobs ? (
+                  <div className="flex justify-center items-center">
+                    <Loader2 className="animate-spin h-8 w-8 text-primary" />
+                  </div>
+                ) : jobs.length === 0 ? (
                   <p>No Jobs available for this qualification.</p>
                 ) : (
                   <div className="grid md:grid-cols-2 gap-6">
@@ -193,12 +132,8 @@ export default function WorkRecommendationsPage() {
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between">
                             <div>
-                              <CardTitle className="text-xl">
-                                {job.title}
-                              </CardTitle>
-                              <CardDescription className="mt-1">
-                                {job.location}
-                              </CardDescription>
+                              <CardTitle className="text-xl">{job.title}</CardTitle>
+                              <CardDescription className="mt-1">{job.location}</CardDescription>
                             </div>
                             <div className="p-2 rounded-full bg-primary/10">
                               <Briefcase className="h-5 w-5 text-primary" />
@@ -208,17 +143,11 @@ export default function WorkRecommendationsPage() {
                         <CardContent>
                           <div className="space-y-2">
                             <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">
-                                Salary Range:
-                              </span>
-                              <span className="font-medium">
-                                {job.salary}/month
-                              </span>
+                              <span className="text-muted-foreground">Salary Range:</span>
+                              <span className="font-medium">{job.salary}/month</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                              <span className="text-muted-foreground">
-                                Qualification:
-                              </span>
+                              <span className="text-muted-foreground">Qualification:</span>
                               <span className="font-medium">
                                 {job.qualification === "10th"
                                   ? "10th Pass"
@@ -246,86 +175,39 @@ export default function WorkRecommendationsPage() {
                     ))}
                   </div>
                 )}
-
-                <div className=" p-4 rounded-lg bg-muted">
-                  <div className="flex items-start space-x-4">
-                    <div className="p-2 rounded-full bg-primary/10 mt-1">
-                      <Lightbulb className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">
-                        Want better job opportunities?
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Upgrade your skills to qualify for higher-paying jobs.
-                        Check out our skill-building programs.
-                      </p>
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto mt-2"
-                        onClick={() => setActiveTab("skills")}
-                      >
-                        View Skill Programs
-                      </Button>
-                    </div>
-                  </div>
-                </div>
               </TabsContent>
 
+              {/* Skills Tab */}
               <TabsContent value="skills" className="space-y-6">
-              {skills.length === 0 ? (
-                  <p>No Skills available at this  moment.</p>
+                {loadingSkills ? (
+                  <div className="flex justify-center items-center">
+                    <Loader2 className="animate-spin h-8 w-8 text-primary" />
+                  </div>
+                ) : skills.length === 0 ? (
+                  <p>No Skills available at this moment.</p>
                 ) : (
-                <div className="grid md:grid-cols-2 gap-6">
-                  {skills.map((skill, index) => (
-                    <Card key={index}>
-                      <CardHeader>
-                        <CardTitle>{skill.title}</CardTitle>
-                        <CardDescription>
-                          Duration: {skill.duration}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <p className="text-sm">{skill.description}</p>
-
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-medium">
-                            Skill Roadmap:
-                          </h4>
-                          <div className="space-y-3">
-                            {skill.levels.map((level, idx) => (
-                              <div key={idx} className="flex items-center">
-                                <div
-                                  className={`w-2 h-2 rounded-full mr-2 ${
-                                    idx === 0
-                                      ? "bg-green-500"
-                                      : idx === 1
-                                      ? "bg-yellow-500"
-                                      : "bg-red-500"
-                                  }`}
-                                ></div>
-                                <span className="text-sm">{level}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter>
-                          <a
-                            href={skill.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full"
-                          >
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {skills.map((skill, index) => (
+                      <Card key={index}>
+                        <CardHeader>
+                          <CardTitle>{skill.title}</CardTitle>
+                          <CardDescription>Duration: {skill.duration}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <p className="text-sm">{skill.description}</p>
+                        </CardContent>
+                        <CardFooter>
+                          <a href={skill.link} target="_blank" rel="noopener noreferrer" className="w-full">
                             <Button className="w-full group">
                               Enroll Now
                               <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                             </Button>
-                        </a>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>)}
+                          </a>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>
