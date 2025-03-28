@@ -80,6 +80,9 @@ export const authOptions: NextAuthOptions = {
 
       return true;
     },
+    async redirect({ url, baseUrl }) {
+      return "/career-path"; // Always redirect to this route after login
+    },
   },
   pages: {
     signIn: "/login", // Specify custom login page
